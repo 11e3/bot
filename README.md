@@ -30,7 +30,10 @@
 ## ⚙ 시스템 구현 및 기술 스택
 
 - **언어**: Python  
-- **라이브러리**: `requests`, `beautifulsoup4`, `numpy`, `pandas`, `matplotlib`, `pyupbit`  
+- **사용 라이브러리**:
+  - `numpy`, `pandas`, `matplotlib`
+  - `requests`, `beautifulsoup4`
+  - `pyupbit`
 - **운용 환경**: AWS EC2 nano 인스턴스에서 무한루프 방식으로 자동 실행  
 - **데이터 소스**: 한국투자증권 API, 업비트 API  
 
@@ -43,12 +46,12 @@
 - fee: 0.03%
 - etf/etf_bt.py 실행시 확인 가능
 
-## 리플 전략 vs 홀딩 (2017~2025)
+## 리플 전략 vs 벤치마크 (2017~2025)
 
 ![XRP 전략 성과](assets/xrp.png)
 
 - 전략: CAGR 187.0%, MDD -20.8%  
-- 홀딩: CAGR 43.5%, MDD -95.9%
+- 벤치마크: CAGR 43.5%, MDD -95.9%
 - fee: 0.1%
 - crypto/bt.py 실행시 확인 가능
 
