@@ -21,7 +21,7 @@ def strat(df, k):
                         df['open'] / df['target'].shift(1) * (1 - fee),
                         1)
     
-    df['ror'] = (df['ror'] - 1) * 0.95 + 1
+    df['ror'] = (df['ror'] - 1) * 0.9 + 1  # 매 거래에 전체 자산의 90%만 투자
 
     # total
     df['total'] = df['ror'].cumprod()
@@ -55,7 +55,7 @@ strat = strat(df, k)
 print('strat')
 mat(strat)
 
-bm = df['close'] / df['close'][0]
+bm = df['close'] / df['close'].iloc[0]
 print('benchmark')
 mat(bm)
 
@@ -66,7 +66,7 @@ plt.figure(figsize=(12, 8))
 #plt.subplot(2, 1, 1)
 #plt.plot(df.index, balance_history, label="Portfolio Balance", color='b')
 plt.semilogy(df.index, strat, label="Portfolio Balance", color='b')
-plt.semilogy(df.index, bm, label='benchmark', color='r')
+plt.semilogy(df.index, bm, label='XRP (benchmark)', color='r')
 
 plt.xlabel("Date")
 plt.ylabel("Balance")

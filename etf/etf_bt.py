@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
+from io import StringIO
 
 
 def crawl(code):
@@ -30,7 +31,7 @@ def crawl(code):
     for page in range(1, int(last_page)+1):
         url = '{}&page={}'.format(sise_url, page)  
         html = requests.get(url, headers={'User-agent': 'Mozilla/5.0'}).text
-        df = pd.concat([df, pd.read_html(html, header=0)[0]])
+        df = pd.concat([df, pd.read_html(StringIO(html), header=0)[0]])  # Wrap html in StringIO
     
     df['date'] = pd.to_datetime(df['날짜'])
     df.set_index('date', inplace=True)
@@ -168,6 +169,20 @@ def main(code1, code2):
     plt.plot(df1.index, df1['종가']/df1['종가'].iloc[0])
     plt.plot(df1.index, cumulative_returns)
     plt.yscale('log')
+    plt.show()
+    
+    plt.figure(figsize=(12, 8))
+
+    plt.semilogy(df1.index, cumulative_returns, label="Portfolio Balance", color='b')
+    plt.semilogy(df1.index, df1['종가']/df1['종가'].iloc[0], label='kodex_kosdaq_150_leverage (benchmark)', color='r')
+
+    plt.xlabel("Date")
+    plt.ylabel("Balance")
+    plt.title("Portfolio Balance Over Time")
+    plt.legend()
+    plt.grid()
+
+    plt.tight_layout()
     plt.show()
 
 
