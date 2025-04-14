@@ -4,17 +4,14 @@ from datetime import datetime, timedelta
 import time
 
 
-# 매수
 def buy(krw, ticker):
     result = upbit.buy_market_order(ticker=ticker, price=krw * 0.9)  # 전체 자산의 90% 투자
 
-# 매도
 def sell(xrp, ticker):
     result = upbit.sell_market_order(ticker=ticker, volume=xrp)
 
-# target, bull 업데이트
 def update(ticker, k, window):
-    df = pyupbit.get_ohlcv(ticker=ticker, count=10)  # 10 이상은 줘야 ma 계산하고 shift로 밀고 할 수 있음
+    df = pyupbit.get_ohlcv(ticker=ticker, count=10)  # 10정도 줘야 ma 계산하고 shift로 밀고 할 때 편함
 
     df['range'] = df['high'] - df['close']
     df['target'] = df['range'].shift(1) * k + df['open']
@@ -26,26 +23,26 @@ def update(ticker, k, window):
     
     return target, bull
 
-# 메인 코드
+
 if __name__ == "__main__":
     k = 1
     window = 5
     ticker = 'KRW-XRP'
 
-    # config 파일 로드
+    # Upbit API 키 설정
     f = pd.read_csv('config/config.csv')
     access_key = f.iloc[0, 1]
     secret_key = f.iloc[1, 1]
     upbit = pyupbit.Upbit(access_key, secret_key)
 
-    # 초기 target 및 bull 계산
+    # 초기 target 및 bull 값 설정
     target, bull = update(ticker, k, window)
 
-    # 손절 상태 초기화
+    # 손절 여부 초기화
     loss_cut = False
     
     while True:
-        # 가격 조회
+        # 현재 가격 조회
         try:
             price = pyupbit.get_current_price(ticker)
         except:
@@ -54,7 +51,7 @@ if __name__ == "__main__":
         
         # 현재 시간 및 보유 XRP 조회
         now = datetime.now()
-        xrp = upbit.get_balance(ticker)  # typeerror 뜨면 ip 등록 안된거
+        xrp = upbit.get_balance(ticker)  # typeerror 뜨면 ip 등록 안 된 거
         
         # 0시부터 10초 이내에 초기화
         reset_time = now.replace(hour=0, minute=0, second=0, microsecond=0)
