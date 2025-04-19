@@ -8,6 +8,7 @@
 퍼티 접속 ip: 
 3.36.131.82
 
+Connection - SSH - Auth - Credentials - private key:
 C:\workspace\coding\python\bot\config\bot.ppk
 
 login as: 
