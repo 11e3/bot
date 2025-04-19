@@ -1,0 +1,36 @@
+- aws ec2nano
+- 26년 12월에 등록한 우리은행 카드 만료됨
+- 네이버, 옛날 인증서비번
+
+업비트에 aws 퍼블릭ip주소 등록: 
+3.36.131.82
+
+퍼티 접속 ip: 
+3.36.131.82
+
+C:\workspace\coding\python\bot\config\bot.ppk
+
+login as: 
+ec2-user
+
+프로그램 확인
+ps aux | grep .py
+
+프로그램 죽이기
+pkill -f main.py
+
+코드 옮기기 (bot 폴더 aws에 붙여넣는 명령어
+aws말고 그냥 윈도우 cmd 열고 붙여넣으면 됨)
+scp -i C:\workspace\coding\python\bot\config\bot.pem -r C:\workspace\coding\python\bot ec2-user@3.36.131.82:/home/ec2-user
+
+코드 백그라운드에서 돌리기
+nohup python3 bot/crypto/main.py > /dev/null 2>&1 &
+
+돌아가는지 확인
+ps aux | grep .py
+
+폴더 삭제
+rm -rf bot
+
+현재시간
+date
