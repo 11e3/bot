@@ -12,6 +12,8 @@ def sell(xrp, ticker):
 
 def update(ticker, k, window):
     df = pyupbit.get_ohlcv(ticker=ticker, count=10)  # 10정도 줘야 ma 계산하고 shift로 밀고 할 때 편함
+    if df is None or df.empty:
+        return None, None
 
     df['range'] = df['high'] - df['close']
     df['target'] = df['range'].shift(1) * k + df['open']
@@ -23,55 +25,77 @@ def update(ticker, k, window):
     
     return target, bull
 
-
-if __name__ == "__main__":
+def main():
     k = 1
     window = 5
     ticker = 'KRW-XRP'
 
-    # Upbit API 키 설정
     f = pd.read_csv('config/config.csv')
     access_key = f.iloc[0, 1]
     secret_key = f.iloc[1, 1]
+    global upbit
     upbit = pyupbit.Upbit(access_key, secret_key)
 
-    # 초기 target 및 bull 값 설정
     target, bull = update(ticker, k, window)
+    if target is None or bull is None:
+        print("Error: Unable to fetch initial target and bull values.")
+        return
 
-    # 손절 여부 초기화
     loss_cut = False
+    reset_done = False
     
     while True:
-        # 현재 가격 조회
         try:
+            now = datetime.now()
+            reset_time = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
             price = pyupbit.get_current_price(ticker)
-        except:
-            time.sleep(1)
-            continue
-        
-        # 현재 시간 및 보유 XRP 조회
-        now = datetime.now()
-        xrp = upbit.get_balance(ticker)  # typeerror 뜨면 ip 등록 안 된 거
-        
-        # 0시부터 10초 이내에 초기화
-        reset_time = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        if now < reset_time + timedelta(seconds=10):
-            loss_cut = False
-            if xrp > 0:
+            if price is None:
+                print("Error: Unable to fetch current price.")
+                time.sleep(1)
+                continue
+
+            xrp = upbit.get_balance(ticker)  # typeerror 뜨면 ip 등록 안 된 거
+            if xrp is None:
+                print("Error: Unable to fetch XRP balance.")
+                time.sleep(1)
+                continue
+            
+            # 매일 UTC기준 0시마다 초기화
+            if reset_time <= now < reset_time + timedelta(minutes=1) and not reset_done:
+                loss_cut = False
+                if xrp > 0:
+                    sell(xrp, ticker)
+                target, bull = update(ticker, k, window)
+                reset_done = True
+            
+            if now >= reset_time + timedelta(minutes=1):
+                reset_done = False
+
+            # 매수 조건
+            if xrp == 0 and not loss_cut:
+                if price >= target and bull:
+                    krw = upbit.get_balance('KRW')
+                    if krw is not None and krw > 5000:
+                        buy(krw, ticker)
+
+            # 손절 조건 (5%)
+            if xrp > 0 and price <= target * 0.95:
+                loss_cut = True
                 sell(xrp, ticker)
 
-            # target 및 bull 갱신
-            target, bull = update(ticker, k, window)
+            time.sleep(1)
+            
+        except Exception as e:
+            with open("error_log.txt", "a") as f:
+                f.write(f"{datetime.now()} - {str(e)}\n")
+            time.sleep(10)
 
-        # 손절이 안된 경우 모니터링
-        elif xrp == 0 and not loss_cut:
-            if price >= target and bull:
-                krw = upbit.get_balance('KRW')
-                buy(krw, ticker)
-
-        # 손절 조건 체크 (5% 손실 시)
-        elif xrp > 0 and price <= target * 0.95:
-            loss_cut = True
-            sell(xrp, ticker)
-
-        time.sleep(1)
+if __name__ == "__main__":
+    while True:
+        try:
+            main()
+        except Exception as e:
+            with open("error_log.txt", "a") as f:
+                f.write(f"[RESTART] {datetime.now()} - {str(e)}\n")
+            time.sleep(10)
