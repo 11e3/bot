@@ -52,17 +52,21 @@ def main():
             price = pyupbit.get_current_price(ticker)
             if price is None:
                 print("Error: Unable to fetch current price.")
+                with open("error_log.txt", "a") as f:
+                    f.write(f"{datetime.now()} - Unable to fetch current price.\n")
                 time.sleep(1)
                 continue
 
             xrp = upbit.get_balance(ticker)  # typeerror 뜨면 ip 등록 안 된 거
             if xrp is None:
                 print("Error: Unable to fetch XRP balance.")
+                with open("error_log.txt", "a") as f:
+                    f.write(f"{datetime.now()} - Unable to fetch XRP balance.\n")
                 time.sleep(1)
                 continue
             
             # 매일 UTC기준 0시마다 초기화
-            if reset_time <= now < reset_time + timedelta(minutes=1) and not reset_done:
+            if reset_time <= now < reset_time + timedelta(seconds=10) and not reset_done:
                 loss_cut = False
                 if xrp > 0:
                     sell(xrp, ticker)
@@ -73,20 +77,25 @@ def main():
                 reset_done = False
 
             # 매수 조건
-            if xrp == 0 and not loss_cut:
+            if reset_done == False and xrp == 0 and not loss_cut:
                 if price >= target and bull:
                     krw = upbit.get_balance('KRW')
                     if krw is not None and krw > 5000:
                         buy(krw, ticker)
+                    else:
+                        print("Error: krw is None or krw <= 5000.")
+                        with open("error_log.txt", "a") as f:
+                            f.write(f"{datetime.now()} - krw is None or krw <= 5000.\n")
 
             # 손절 조건 (5%)
-            if xrp > 0 and price <= target * 0.95:
+            if reset_done == False and xrp > 0 and price <= target * 0.95:
                 loss_cut = True
                 sell(xrp, ticker)
 
             time.sleep(1)
             
         except Exception as e:
+            print(f"Error: {str(e)}")
             with open("error_log.txt", "a") as f:
                 f.write(f"{datetime.now()} - {str(e)}\n")
             time.sleep(10)
@@ -96,6 +105,7 @@ if __name__ == "__main__":
         try:
             main()
         except Exception as e:
+            print(f"Error in main loop: {str(e)}")
             with open("error_log.txt", "a") as f:
                 f.write(f"[RESTART] {datetime.now()} - {str(e)}\n")
             time.sleep(10)
