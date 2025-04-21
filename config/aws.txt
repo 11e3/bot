@@ -1,34 +1,36 @@
-- aws ec2nano
+aws
+- 네이버아이디, 옛날 인증서비번
 - 26년 12월에 등록한 우리은행 카드 만료됨
-- 네이버, 옛날 인증서비번
+- aws 퍼블릭ip주소(업비트에 등록해야 함): 3.36.131.82
 
-aws 퍼블릭ip주소(업비트에 등록, 퍼티 접속할 때 사용): 
-3.36.131.82
+업비트
+- 2025.09.24 19:19 만료
 
-Connection - SSH - Auth - Credentials - private key:
-C:\workspace\coding\python\bot\config\bot.ppk
 
-login as: 
-ec2-user
+*
 
-프로그램 확인
-ps aux | grep .py
+
+터미널로 aws 접속
+ssh -i C:\workspace\coding\python\bot\config\bot.pem ec2-user@3.36.131.82
+
+.py로 백그라운드(nohup)에서 돌아가고 있는지 확인
+ps aux | grep bot/crypto/main.py
 
 프로그램 죽이기
-pkill -f main.py
+pkill -f /bot/crypto/main.py
 
-코드 옮기기 (bot 폴더 aws에 붙여넣는 명령어
-aws말고 그냥 윈도우 cmd 열고 붙여넣으면 됨)
-scp -i C:\workspace\coding\python\bot\config\bot.pem -r C:\workspace\coding\python\bot ec2-user@3.36.131.82:/home/ec2-user
+기존 폴더 삭제하고 git 저장소 가져오기(clone)
+rm -rf bot && git clone https://github.com/11e3/bot.git
 
 코드 백그라운드에서 돌리기
 nohup python3 bot/crypto/main.py > /dev/null 2>&1 &
 
-돌아가는지 확인
-ps aux | grep .py
 
-폴더 삭제
-rm -rf bot
+*
+
 
 현재시간
 date
+
+git 설치(안됐을 경우)
+sudo yum install git -y
