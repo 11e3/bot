@@ -66,7 +66,7 @@ def main():
                 continue
             
             # 매일 UTC기준 0시마다 초기화
-            if reset_time <= now < reset_time + timedelta(seconds=10) and not reset_done:
+            if reset_time <= now < reset_time + timedelta(minutes=1) and not reset_done:
                 loss_cut = False
                 if xrp > 0:
                     sell(xrp, ticker)
@@ -77,7 +77,7 @@ def main():
                 reset_done = False
 
             # 매수 조건
-            if reset_done == False and xrp == 0 and not loss_cut:
+            if not reset_done and xrp == 0 and not loss_cut:
                 if price >= target and bull:
                     krw = upbit.get_balance('KRW')
                     if krw is not None and krw > 5000:
@@ -88,7 +88,7 @@ def main():
                             f.write(f"{datetime.now()} - krw is None or krw <= 5000.\n")
 
             # 손절 조건 (5%)
-            if reset_done == False and xrp > 0 and price <= target * 0.95:
+            if not reset_done and xrp > 0 and price <= target * 0.95:
                 loss_cut = True
                 sell(xrp, ticker)
 

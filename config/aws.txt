@@ -25,6 +25,9 @@ rm -rf bot && git clone https://github.com/11e3/bot.git
 코드 백그라운드에서 돌리기
 nohup python3 bot/crypto/main.py > /dev/null 2>&1 &
 
+나가기
+exit
+
 
 *
 
