@@ -17,7 +17,7 @@ ssh -i C:\workspace\coding\python\bot\config\bot.pem ec2-user@3.36.131.82
 ps aux | grep bot/crypto/main.py
 
 프로그램 죽이기
-pkill -f /bot/crypto/main.py
+pkill -f bot/crypto/main.py
 
 기존 폴더 삭제하고 git 저장소 가져오기(clone)
 rm -rf bot && git clone https://github.com/11e3/bot.git
