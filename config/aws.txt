@@ -1,17 +1,20 @@
 aws
 - 네이버아이디, 옛날 인증서비번
 - 26년 12월에 등록한 우리은행 카드 만료됨
-- aws 퍼블릭ip주소(업비트에 등록해야 함): 3.36.131.82
+- aws 퍼블릭ip주소(업비트에 등록해야 함): 52.78.64.72
 
 업비트
-- 2025.09.24 19:19 만료
+- api 2025.09.24 19:19 만료
 
 
 *
 
 
 터미널로 aws 접속
-ssh -i C:\workspace\coding\python\bot\config\bot.pem ec2-user@3.36.131.82
+ssh -i C:/workspace/coding/python/bot/config/bot.pem ec2-user@52.78.64.72
+
+로그 확인
+cat bot/error_log_txt
 
 .py로 백그라운드(nohup)에서 돌아가고 있는지 확인
 ps aux | grep bot/crypto/main.py
@@ -24,6 +27,9 @@ rm -rf bot && git clone https://github.com/11e3/bot.git
 
 코드 백그라운드에서 돌리기
 nohup python3 bot/crypto/main.py > /dev/null 2>&1 &
+
+코드 그냥 돌리기
+python3 bot/crypto/main.py
 
 나가기
 exit
