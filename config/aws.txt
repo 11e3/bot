@@ -13,23 +13,26 @@ aws
 터미널로 aws 접속
 ssh -i C:/workspace/coding/python/bot/config/bot.pem ec2-user@52.78.64.72
 
-로그 확인
-cat bot/error_log_txt
+bot폴더로 이동 (필수. 무조건 /bot에서 실행시켜야함 - 제작환경 경로가 이 폴더임)
+cd bot
 
 .py로 백그라운드(nohup)에서 돌아가고 있는지 확인
-ps aux | grep bot/crypto/main.py
+ps aux | grep crypto/main.py
 
 프로그램 죽이기
-pkill -f bot/crypto/main.py
+pkill -f crypto/main.py
 
-기존 폴더 삭제하고 git 저장소 가져오기(clone)
+로컬에서 aws로 바로 복사하기
+scp -i C:/workspace/coding/python/bot/config/bot.pem -r C:/workspace/coding/python/bot ec2-user@52.78.64.72:/home/ec2-user/
+
+기존 폴더 삭제하고 git 저장소 가져오기(clone) (gitignore된 파일은 복사 안 됨 - 사용 금지)
 rm -rf bot && git clone https://github.com/11e3/bot.git
 
 코드 백그라운드에서 돌리기
-nohup python3 bot/crypto/main.py > /dev/null 2>&1 &
+nohup python3 crypto/main.py > /dev/null 2>&1 &
 
 코드 그냥 돌리기
-python3 bot/crypto/main.py
+python3 crypto/main.py
 
 나가기
 exit
